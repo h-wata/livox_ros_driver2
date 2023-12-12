@@ -10,6 +10,8 @@
 	<arg name="output_type" default="0"/>
 	<arg name="rviz_enable" default="false"/>
 	<arg name="rosbag_enable" default="false"/>
+	<arg name="rosbag_name" default="livox-bag"/>
+	<arg name="undistortion_enable" default="false"/>
 	<arg name="cmdline_arg" default="$(arg bd_list)"/>
 	<arg name="msg_frame_id" default="livox_frame"/>
 	<arg name="lidar_bag" default="true"/>
@@ -32,9 +34,15 @@
 	      type="livox_ros_driver2_node" required="true"
 	      output="screen" args="$(arg cmdline_arg)"/>
 
+	<group if="$(arg undistortion_enable)">
+    <node pkg="livox_dedistortion_pkg" type="livox_repub_node" name="livox_repub_node">
+    </node>
+    <node pkg="livox_dedistortion_pkg" type="deskew_node" name="deskew_node">
+    </node>
+  </group>
 	<group if="$(arg rosbag_enable)">
     	<node pkg="rosbag" type="record" name="record" output="screen"
-          		args="-a"/>
-    </group>
+          		args="-a -o $(arg rosbag_name)"/>
+  </group>
 
 </launch>
